@@ -12,6 +12,11 @@ from core.database import Base
 
 
 class Review(Base):
+    """
+    Contract review from one user to another.
+    Captures rating and comment data tied to a contract, plus
+    full-text/trigram indexes for fast search.
+    """
     __tablename__ = "reviews"
 
     id = Column(UUID, primary_key=True, default=uuid4)

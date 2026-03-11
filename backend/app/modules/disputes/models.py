@@ -11,6 +11,11 @@ from core.database import Base
 
 
 class Dispute(Base):
+    """
+    Formal dispute raised against a contract.
+    Stores who raised the dispute, the stated reason, current review status,
+    and optional final resolution notes.
+    """
     __tablename__ = "disputes"
 
     id = Column(UUID, primary_key=True, default=uuid4)

@@ -15,6 +15,12 @@ from core.database import Base
 
 
 class Contract(Base):
+    """
+    Service contract between a client and a provider.
+    Stores the parties, linked listing, total contract amount, currency, and
+    contract lifecycle state from payment pending through completion/dispute.
+    Enforces non-negative totals and prevents self-contracting.
+    """
     __tablename__ = "contracts"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -49,6 +55,12 @@ class Contract(Base):
 
 
 class Milestone(Base):
+    """
+    Deliverable milestone under a contract.
+    Represents a scoped payment unit with title, amount, due date, and
+    milestone lifecycle state from pending to released funds.
+    Milestones are deleted automatically when the parent contract is deleted.
+    """
     __tablename__ = "contract_milestones"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)

@@ -13,6 +13,11 @@ from core.database import Base
 
 
 class EscrowAccount(Base):
+    """
+    Escrow wallet for a contract.
+    Holds the current escrow balance and lifecycle state
+    (open, locked, closed) for controlled fund release.
+    """
     __tablename__ = "escrow_accounts"
 
     id = Column(UUID, primary_key=True, default=uuid4)
@@ -26,6 +31,11 @@ class EscrowAccount(Base):
 
 
 class EscrowTransaction(Base):
+    """
+    Ledger entry for escrow fund movement.
+    Records one deposit, release, or refund event with amount,
+    optional external reference, and creation timestamp.
+    """
     __tablename__ = "escrow_transactions"
 
     id = Column(UUID, primary_key=True, default=uuid4)

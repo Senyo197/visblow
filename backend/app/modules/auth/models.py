@@ -1,4 +1,3 @@
-# auth/models.py
 from uuid import uuid4
 from sqlalchemy import (
     Column,
@@ -7,12 +6,21 @@ from sqlalchemy import (
     DateTime,
     func,
     Index,
+    Integer,
+    UniqueConstraint
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from core.database import Base
 
 
 class UserCredential(Base):
+    """
+    Credential record for a single user.
+
+    Stores login identity and account security state.
+    Passwords are stored only as hashes.
+    Enforces one credential row per user and case-insensitive unique email.
+    """
     __tablename__ = "user_credentials"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -35,6 +43,12 @@ class UserCredential(Base):
 
 
 class RefreshToken(Base):
+    """
+    Issued refresh-token record.
+
+    Stores a hashed token, expiry time, and revocation state for a user session.
+    Raw refresh tokens are never stored.
+    """
     __tablename__ = "auth_refresh_tokens"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -47,4 +61,25 @@ class RefreshToken(Base):
 
     __table_args__ = (
         Index("idx_refresh_tokens_user_revoked", "user_id", "revoked"),
+    )
+
+
+class IdempotencyKey(Base):
+    __tablename__ = "idempotency_keys"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    actor_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    action = Column(String(100), nullable=False)
+    key = Column(String(128), nullable=False)
+    request_hash = Column(String(64), nullable=False)
+    status_code = Column(Integer, nullable=False)
+    #response_body = Column(JSONB, nullable=False)
+    resource_type = Column(String(50))
+    resource_id = Column(UUID(as_uuid=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("actor_id", "action", "key", name="uq_idem_actor_action_key"),
+        Index("idx_idem_expires_at", "expires_at"),
     )

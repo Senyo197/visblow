@@ -15,6 +15,11 @@ from core.database import Base
 
 
 class ServiceCategory(Base):
+    """
+    Service category in a hierarchical taxonomy.
+    Categories are uniquely named and linked to a parent category
+    to support nested marketplace navigation.
+    """
     __tablename__ = "marketplace_categories"
 
     id = Column(UUID, primary_key=True, default=uuid4)
@@ -23,6 +28,11 @@ class ServiceCategory(Base):
 
 
 class ServiceListing(Base):
+    """
+    Published provider offering in the marketplace.
+    Stores listing content, pricing, publication status, and
+    aggregate rating fields for discovery and ranking.
+    """
     __tablename__ = "marketplace_listings"
 
     id = Column(UUID, primary_key=True, default=uuid4)

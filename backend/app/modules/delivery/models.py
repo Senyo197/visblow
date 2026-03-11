@@ -12,6 +12,11 @@ from core.database import Base
 
 
 class Delivery(Base):
+    """
+    Milestone delivery submission record.
+    Represents one delivery attempt for a milestone, including submitter identity,
+    optional notes/file reference, review status, and submission timestamp.
+    """
     __tablename__ = "deliveries"
 
     id = Column(UUID, primary_key=True, default=uuid4)

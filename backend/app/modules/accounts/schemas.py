@@ -97,7 +97,6 @@ class ProfileUpdate(ProfileBase):
 
 
 class ProfileOut(ORMBase, ProfileBase):
-    id: UUID
     user_id: UUID
     created_at: datetime
 

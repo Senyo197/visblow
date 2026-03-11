@@ -14,8 +14,11 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID, TSVECTOR
 from core.database import Base
 
+
 """
-Association table for the many-to-many relationship between roles and permissions.
+Association table linking roles to permissions in RBAC.
+Each row means a role grants a permission.
+Cascade deletes remove stale mappings when either side is deleted.
 """
 role_permissions = Table(
     "auth_role_permissions",
@@ -27,8 +30,11 @@ role_permissions = Table(
 
 
 class Role(Base):
-    """System role table meant for RBAC, with a unique name and privilege hierarchy."""
-
+    """
+    Role names are unique.
+    `privilege_level` supports hierarchy-based authorization checks.
+    `is_system` marks built-in roles managed by the system.
+    """
     __tablename__ = "auth_roles"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -39,8 +45,10 @@ class Role(Base):
 
 
 class Permission(Base):
-    """Atomic permission that can be assigned to roles."""
-
+    """
+    Atomic RBAC permission identified by a unique code.
+    Codes should be stable, machine-readable identifiers (for example: `users:read`).
+    """
     __tablename__ = "auth_permissions"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -48,13 +56,15 @@ class Permission(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 
-class User(Base):
-    """Core user account storing lifecycle state and assigned role."""
-
+class UserAccount(Base):
+    """
+    Stores account lifecycle flags and the currently assigned role.
+    `role_assigned_at` tracks when the current role was applied.
+    """
     __tablename__ = "accounts_users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    role_id = role_id = Column(UUID(as_uuid=True), nullable=False)
+    role_id = Column(UUID(as_uuid=True), ForeignKey("auth_roles.id", ondelete="SET NULL"), nullable=True)
     role_assigned_at = Column(DateTime(timezone=True), server_default=func.now())
     is_verified = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
@@ -62,15 +72,18 @@ class User(Base):
 
 
 class Profile(Base):
-    """One-to-one user profile containing personal, location, and searchable fields."""
-
+    """
+    One-to-one user profile extension.
+    Stores personal, location, and qualification fields.
+    Includes full-text and trigram indexes for fast search and autocomplete.
+    """
     __tablename__ = "accounts_profiles"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_id = Column(
-        UUID,
+        UUID(as_uuid=True),
         ForeignKey("accounts_users.id", ondelete="CASCADE"),
-        unique=True, nullable=False
+        primary_key=True,
+        nullable=False,
     )
     full_name = Column(String(255))
     profile_image_url = Column(String(500))
@@ -114,12 +127,14 @@ class Profile(Base):
 
 
 class Company(Base):
-    """Company record owned by a user, with searchable name/description fields."""
-
+    """
+    Company entity owned by a user account.
+    Stores company identity and description with search indexes for lookup.
+    """
     __tablename__ = "accounts_companies"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    owner_id = Column(UUID, ForeignKey("accounts_users.id", ondelete="RESTRICT"), nullable=False)
+    owner_id = Column(UUID, ForeignKey("accounts_users.id", ondelete="CASCADE"), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text)
     search_vector = Column(TSVECTOR)
