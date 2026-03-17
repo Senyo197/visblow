@@ -126,6 +126,30 @@ class Profile(Base):
     )
 
 
+class Language(Base):
+    __tablename__ = "languages"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False, unique=True)
+
+
+class ProfileLanguage(Base):
+    __tablename__ = "accounts_profile_languages"
+
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("accounts_profiles.user_id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    language_id = Column(
+        Integer,
+        ForeignKey("languages.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+
+
 class Company(Base):
     """
     Company entity owned by a user account.
