@@ -12,7 +12,7 @@ from sqlalchemy import (
     func
 )
 from sqlalchemy.dialects.postgresql import UUID, TSVECTOR
-from core.database import Base
+from app.core.database import Base
 
 
 """

@@ -9,7 +9,7 @@ from sqlalchemy import (
     Numeric
 )
 from sqlalchemy.dialects.postgresql import UUID
-from core.database import Base
+from app.core.database import Base
 
 
 class EscrowAccount(Base):

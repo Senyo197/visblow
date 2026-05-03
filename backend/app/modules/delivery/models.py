@@ -8,7 +8,7 @@ from sqlalchemy import (
     Enum
 )
 from sqlalchemy.dialects.postgresql import UUID
-from core.database import Base
+from app.core.database import Base
 
 
 class Delivery(Base):

@@ -8,7 +8,7 @@ from sqlalchemy import (
     Integer
 )
 from sqlalchemy.dialects.postgresql import UUID, TSVECTOR
-from core.database import Base
+from app.core.database import Base
 
 
 class Review(Base):

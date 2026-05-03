@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 from collections.abc import AsyncGenerator
-from core.config import get_settings
+from app.core.config import get_settings
 
 
 # Centralized abstraction loads application configuration from environment.
