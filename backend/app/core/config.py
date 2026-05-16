@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    DATABASE_URL: str = "postgresql+asyncpg://visblow:visblow@localhost:5432/visblow_db"
+    DATABASE_URL: str = "postgresql+asyncpg://visblow:visblow@localhost:6432/visblow_db"
 
     REDIS_URL: str | None = None
     REDIS_HOST: str = "localhost"
